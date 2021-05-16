@@ -5,26 +5,27 @@ from twilio.rest import Client
 from selenium import webdriver
 from time import sleep
 from datetime import datetime
+from config import Config
 
 # Login and password for Telbaza account
-login_data = {'0': ('service.pl@bystronic.com', 'Service.pl'),
-              '1': ('michal.wald@bystronic.com', 'Investa2020')}
+login_data = Config.login_data
 
 
 def send_sms(number: str, message: str) -> None:
-    # Finction sends sms
-    account_sid = 'AC732a0110f3b9955c7873411efd1944c2'
-    auth_token = '71d08676d8d7368c710c030d8707524d'
+    # Function sends sms
+    account_sid = Config.account_sid
+    auth_token = Config.auth_token
     client = Client(account_sid, auth_token)
 
     message = client.messages \
                     .create(
                         body = message,
-                        from_='+15034873949',
+                        from_= Config.from_number,
                         to = number
                     )
 
     print(message.sid)
+
 
 def main_loop(call_counter: int) -> None:
     # main loop function
@@ -39,7 +40,7 @@ def main_loop(call_counter: int) -> None:
                 by_number = 'Investa'
             
             new_calls = call_counter_refresh - call_counter
-            phone_number = '+48505494121'
+            phone_number = Config.to_number
             timestamp = datetime.now().strftime('%H:%M:%S')
             incoming_number = driver.find_elements_by_xpath('//div[@class="external-call"]')[-1].text.replace('\n', ' ')
             message = f'[{timestamp}] Zarejestrowano nowe połączenia na numer {by_number} w ilości: {new_calls}. \
@@ -55,6 +56,7 @@ def main_loop(call_counter: int) -> None:
             call_counter = call_counter_refresh
         
         sleep(15)
+
 
 if __name__ == '__main__':
 
